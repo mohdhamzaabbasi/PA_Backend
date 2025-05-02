@@ -92,7 +92,7 @@ const uploadDocument = async (req, res) => {
       formData.append('userId', userEmail);
       formData.append('policyType', 'Health');
   
-      const response = await axios.post('https://large-steaks-switch.loca.lt/api/upload', formData, {
+      const response = await axios.post('https://forty-dolls-yawn.loca.lt/api/upload', formData, {
         headers: formData.getHeaders(),
         maxBodyLength: Infinity,
         maxContentLength: Infinity
@@ -126,6 +126,8 @@ const chatWithAI = async (req, res) => {
 
     // ✅ Now find user by _id
     const user = await User.findById(userId);
+    console.log("**********************");
+    console.log(user);
 
     if (!user) {
       return res.status(404).json({ reply: 'User not found' });
@@ -136,17 +138,30 @@ const chatWithAI = async (req, res) => {
       if (!message) {
         return res.status(400).json({ reply: 'Message is required' });
       }
+
+
+
+
+
+      let conv;
+      conv = await Conversation.findOne({ conversationId });
+      console.log(conv);
+      console.log(typeof(conv));
+        const apiResponse = await axios.post('https://small-hounds-nail.loca.lt/api/query', {
+          query: message,
+          userId: userEmail,      // Hardcoded user for now
+          policyType: "Health", // Hardcoded policy type for now
+          pastQ: conv
+        });
   
-      // Call your REAL API
-      const apiResponse = await axios.post('https://large-steaks-switch.loca.lt/api/query', {
-        query: message,
-        userId: userEmail,      // Hardcoded user for now
-        policyType: "Health" // Hardcoded policy type for now
-      });
+      // // Call your REAL API
+      // const apiResponse = await axios.post('https://wide-rats-taste.loca.lt/api/query', {
+      //   query: message,
+      //   userId: userEmail,      // Hardcoded user for now
+      //   policyType: "Health" // Hardcoded policy type for now
+      // });
   
       const aiReply = apiResponse.data.answer || 'No response from AI.';
-  
-      let conv;
   
       if (conversationId) {
         conv = await Conversation.findOne({ conversationId });
@@ -161,6 +176,7 @@ const chatWithAI = async (req, res) => {
         const newConversationId = uuidv4();
         conv = new Conversation({
           conversationId: newConversationId,
+          user: userEmail,
           messages: [
             { sender: 'user', text: message, timestamp: new Date() },
             { sender: 'bot', text: aiReply, timestamp: new Date() }
@@ -186,8 +202,16 @@ const chatWithAI = async (req, res) => {
 
 // Fetch only conversations belonging to logged-in user
 const getAllConversations = async (req, res) => {
+  console.log("####");
+  const { token } = req.body;
+  console.log(token);
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const userId = decoded.id; // ✅ Assuming token payload has "id" field
+
+    // ✅ Now find user by _id
+    const user = await User.findById(userId);
     try {
-      const conversations = await Conversation.find({}, 'conversationId createdAt').sort({ createdAt: -1});
+      const conversations = await Conversation.find({user: user.email}, 'conversationId createdAt').sort({ createdAt: -1});
       res.status(200).json(conversations);
     } catch (error) {
       console.error('Get conversations error:', error.message);

@@ -19,7 +19,7 @@ const conversationSchema = new mongoose.Schema({
     unique: true
   },
   user: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'User',
     required: false
   },

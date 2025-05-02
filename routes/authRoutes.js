@@ -11,7 +11,7 @@ const upload = multer({ storage: multer.memoryStorage() }); // ✅ use memory st
 router.post('/signup', signupUser);
 router.post('/login', loginUser);
 router.post('/chat', chatWithAI);
-router.get('/conversations', getAllConversations);
+router.post('/conversations', getAllConversations);
 router.get('/conversations/:id', getConversationById);
 router.get('/profile', protect, getProfile);
 
