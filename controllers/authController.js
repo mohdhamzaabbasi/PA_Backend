@@ -92,7 +92,7 @@ const uploadDocument = async (req, res) => {
       formData.append('userId', userEmail);
       formData.append('policyType', 'Health');
   
-      const response = await axios.post('https://dull-worms-rescue.loca.lt/api/upload', formData, {
+      const response = await axios.post('https://cuddly-carpets-camp.loca.lt/api/upload', formData, {
         headers: formData.getHeaders(),
         maxBodyLength: Infinity,
         maxContentLength: Infinity
@@ -147,7 +147,7 @@ const chatWithAI = async (req, res) => {
       conv = await Conversation.findOne({ conversationId });
       console.log(conv);
       console.log(typeof(conv));
-        const apiResponse = await axios.post('https://dull-worms-rescue.loca.lt/api/query', {
+        const apiResponse = await axios.post('https://cuddly-carpets-camp.loca.lt/api/query', {
           query: message,
           userId: userEmail,      // Hardcoded user for now
           policyType: "Health", // Hardcoded policy type for now
